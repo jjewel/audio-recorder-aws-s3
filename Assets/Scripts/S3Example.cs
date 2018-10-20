@@ -50,14 +50,22 @@ namespace AWSSDK.Examples
         public Button GetObjectButton = null;
         public Text ResultText = null;
 
+        private GameObject soundObject;
+
+        void Awake(){
+            
+        }
+
         void Start()
         {
             UnityInitializer.AttachToGameObject(this.gameObject);
+            AWSConfigs.HttpClient = AWSConfigs.HttpClientOption.UnityWebRequest;
             GetBucketListButton.onClick.AddListener(() => { GetBucketList(); });
             PostBucketButton.onClick.AddListener(() => { PostObject(); });
             GetObjectsListButton.onClick.AddListener(() => { GetObjects(); });
             DeleteObjectButton.onClick.AddListener(() => { DeleteObject(); });
             GetObjectButton.onClick.AddListener(() => { GetObject(); });
+            soundObject = GameObject.Find("Voice Recorder");
         }
 
         #region private members
@@ -170,7 +178,7 @@ namespace AWSSDK.Examples
                 }
                 else
                 {
-                    ResultText.text += "\nException while posting the result object";
+                    ResultText.text += "\nException while posting the result object " + responseObj.Exception;
                     ResultText.text += string.Format("\n receieved error {0}", responseObj.Response.HttpStatusCode.ToString());
                 }
             });
@@ -250,9 +258,9 @@ namespace AWSSDK.Examples
 
         private string GetFileHelper()
         {
-            var fileName = SampleFileName;
+            var fileName = soundObject.GetComponent<VoiceRecorder>().fileName;
 
-            if (!File.Exists(Application.persistentDataPath + Path.DirectorySeparatorChar + fileName))
+            if (!File.Exists(Application.persistentDataPath + Path.AltDirectorySeparatorChar + fileName))
             {
                 var streamReader = File.CreateText(Application.persistentDataPath + Path.DirectorySeparatorChar + fileName);
                 streamReader.WriteLine("This is a sample s3 file uploaded from unity s3 sample");
